@@ -72,9 +72,9 @@ def linear_regression(
     # what are effectively OLS residuals rather than matrix inverse
     # to avoid need for MxM array; additionally, dask.lstsq fails
     # with numpy arrays
-    XLP = XL - XC @ da.linalg.lstsq(XC, XL)[0]
+    XLP = XL - da.dot(XC, da.linalg.lstsq(XC, XL)[0])
     assert XLP.shape == (n_obs, n_loop_covar)
-    YP = Y - XC @ da.linalg.lstsq(XC, Y)[0]
+    YP = Y - da.dot(XC, da.linalg.lstsq(XC, Y)[0])
     assert YP.shape == (n_obs, n_outcome)
 
     # Estimate coefficients for each loop covariate
@@ -84,7 +84,7 @@ def linear_regression(
     # only true when an intercept is present.
     XLPS = (XLP ** 2).sum(axis=0, keepdims=True).T
     assert XLPS.shape == (n_loop_covar, 1)
-    B = (XLP.T @ YP) / XLPS
+    B = da.dot(XLP.T, YP) / XLPS
     assert B.shape == (n_loop_covar, n_outcome)
 
     # Compute residuals for each loop covariate and outcome separately
