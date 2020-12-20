@@ -1,6 +1,6 @@
 numpy
 xarray
-dask[array] == 2.30.0
+dask[array]
 dask-ml
 scipy
 typing-extensions
